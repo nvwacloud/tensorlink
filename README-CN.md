@@ -14,7 +14,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
 图中展示了trnasformers框架使用tensorlink进行模型推理的效果
 ![alt text](assets/4.gif)
 ## 场景三：Cinma4D Octane插件 使用远端显卡渲染
-
+![alt text](assets/5.gif)
 # 路线图
 
 - CUDA Runtime API Hook ✅
