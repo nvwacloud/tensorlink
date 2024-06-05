@@ -14,7 +14,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
 图中展示了trnasformers框架使用tensorlink进行模型推理的效果
 ![alt text](assets/4.gif)
 ## 场景三：Cinma4D Octane插件 使用远端显卡渲染
-
+![alt text](assets/5.gif)
 # 路线图
 
 - CUDA Runtime API Hook ✅
@@ -29,7 +29,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
 
 # 依赖
 
-## Windows 客户端
+### Windows 客户端
 
 1. 推荐安装python版本3.10
     ```python
@@ -46,7 +46,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
     解压到任意目录后，将目录配置在系统的环境变量Path中；
     ```
 
-## Linux 服务端
+### Linux 服务端
 
 推荐系统：Rocky Linux 9.3 或 Ubuntu 2024.04
 
@@ -70,7 +70,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
 https://github.com/nvwacloud/tensorlink/releases/
 ``` 
 
-## Windows 客户端
+### Windows 客户端
   解压Tensorlink后，将client\windows目录下所有dll文件拷贝至system32目录下；
   ```python
   cd client\windows
@@ -78,24 +78,24 @@ https://github.com/nvwacloud/tensorlink/releases/
   ```
   <br><b>注意：如果出现cuda相关的dll文件冲突，请自行备份原文件</b>
 
-## Linux 服务端
+### Linux 服务端
   解压Tensorlink后，将server\linux目录下所有文件拷贝至任意目录即可；
 
 # 运行
 
-## Linux 服务端（有显卡）
+### Linux 服务端（有显卡）
 ```python
 ./tensorlink -role server -net native -recv_port 9998 -send_port 9999
 ```
  ![alt text](assets/1.png)
 
-## Windows 客户端
+### Windows 客户端
 ```python
-tensorlink.exe -role client -ip 192.168.1.2 -net native -send_port 9998 -recv_port 9999
+tensorlink.exe -role client -ip <服务端IP> -net native -send_port 9998 -recv_port 9999
 ```
   注意：服务端接收端口对应客户端发送端口，服务端发送端口对应客户端接收端口，两者端口以及协议必须一致。
 
-## 检查运行状态
+### 检查运行状态
   使用python命令行，导入pytorch库，查看是否有远端显卡信息。
   ![alt text](assets/2.png)
 

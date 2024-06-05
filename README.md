@@ -21,8 +21,8 @@ The image shows the effect of the transformers framework using Tensorlink for mo
 ![alt text](assets/4.gif)
 
 
-
 ## Scenario 3: Cinema4D Octane Plugin Remote GPU Rendering
+![alt text](assets/5.gif)
 
 # Roadmap
 
@@ -38,7 +38,7 @@ The image shows the effect of the transformers framework using Tensorlink for mo
 
 # Dependences
 
-## Windows Client
+### Windows Client
 
 1. It is recommended to install Python version 3.10
     ```python
@@ -58,7 +58,7 @@ The image shows the effect of the transformers framework using Tensorlink for mo
     ```
     Extract to any directory and configure the directory in the system environment variable Path.
 
-## Linux Server
+### Linux Server
 
 Recommended System: Rocky Linux 9.3 or Ubuntu 2024.04
 
@@ -82,7 +82,7 @@ Download the latest version of Tensorlink
 https://github.com/nvwacloud/tensorlink/releases/
 ```
 
-## Windows Client
+### Windows Client
 After extracting, copy all DLL files from the client\windows directory to the system32 directory. 
   ```python
   cd client\windows
@@ -90,26 +90,26 @@ After extracting, copy all DLL files from the client\windows directory to the sy
   ```
 <br><b>Note: If there is a conflict with existing CUDA-related DLL files, please back up the original files manually.</b>
 
-## Linux Server
+### Linux Server
 After extracting, copy all files from the server\Linux directory to any directory.
 
 # Running
 
-## Linux Server (with GPU)
+### Linux Server (with GPU)
 ```python
 ./tensorlink -role server -net native -recv_port 9998 -send_port 9999 
 ```
 ![alt text](assets/1.png)
 
-## Windows Client 
+### Windows Client 
   
 ```python
-tensorlink.exe -role client -ip 192.168.1.2 -net native -send_port 9998 -recv_port 9999
+tensorlink.exe -role client -ip <server ip> -net native -send_port 9998 -recv_port 9999
 ```
 
 Note: The server's receiving port corresponds to the client's sending port, and the server's sending port corresponds to the client's receiving port. Both ports and protocols must be consistent.
 
-## Check
+### Check
 
 Check if the program is running correctly <br>Use the Python command line to import the PyTorch library and check if there is remote GPU information.
 ![alt text](assets/2.png)
