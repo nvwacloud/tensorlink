@@ -93,7 +93,7 @@ https://github.com/nvwacloud/tensorlink/releases/
 ```python
 tensorlink.exe -role client -ip <服务端IP> -net native -send_port 9998 -recv_port 9999
 ```
-  注意：服务端接收端口对应客户端发送端口，服务端发送端口对应客户端接收端口，两者端口以及协议必须一致。
+注意：服务端接收端口对应客户端发送端口，服务端发送端口对应客户端接收端口，两者端口以及协议必须一致。
 
 ### 检查运行状态
   使用python命令行，导入pytorch库，查看是否有远端显卡信息。
@@ -102,7 +102,11 @@ tensorlink.exe -role client -ip <服务端IP> -net native -send_port 9998 -recv_
 # 常见问题
 
 1. <b>服务端启动时报错，缺少cudnn库文件</b>
-  <br/>请检查cudnn库文件是否正确安装，如果通过压缩包安装，需要设置库文件路径相关的环境变量或者将库文件拷贝至/lib64目录下，否则程序可能无法找到库文件。
+    - 请检查cudnn库文件是否正确安装；
+    - 如果通过压缩包安装，需要设置库文件路径相关的环境变量或者将库文件拷贝至/lib64目录下，否则程序可能无法找到库文件。
 
 2. <b>客户端程序无响应</b>
-  <br/>请检查客户端程序是否正确安装，vcuda主进程是否运行，可以通过DebugView进一步检查vcuda进程输出的相关信息。
+    - 请检查客户端程序是否正确安装，vcuda主进程是否运行;
+    - 确认是否以管理员权限启动Tensorlink；
+    - 确认使用cuda的第三方程序是否具有管理员权限；
+    - 可以通过[DebugView](https://download.sysinternals.com/files/DebugView.zip)进一步检查vcuda进程输出的相关信息。

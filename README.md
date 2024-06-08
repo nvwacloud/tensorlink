@@ -117,6 +117,12 @@ Check if the program is running correctly <br>Use the Python command line to imp
 
 FAQs
 
-1. <b>Error on server startup, missing CUDNN library files</b> <br>Please check if the CUDNN library files are installed correctly. If installed via a compressed package, you need to set the library file path related environment variables or copy the library files to the /lib64 directory; otherwise, the program may not find the library files.
+1. <b>Error on server startup, missing CUDNN library files</b>      
+    - Please check if the CUDNN library files are installed correctly. 
+    - If installed via a compressed package, you need to set the library file path related environment variables or copy the library files to the /lib64 directory; otherwise, the program may not find the library files.
 
-2. <b>Client program unresponsive</b> <br>Please check if the client program is installed correctly, if the vcuda main process is running, and use DebugView to further check the output information of the vcuda process.
+2. <b>Client program unresponsive</b> 
+    - Please check if the client program is installed correctly and if the vcuda main process is running;
+    - Confirm if Tensorlink is started with administrator privileges;
+    - Confirm if the third-party program using CUDA has administrator privileges;
+    - You can further check the relevant information output by the vcuda process using [DebugView](https://download.sysinternals.com/files/DebugView.zip)
