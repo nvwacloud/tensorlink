@@ -50,6 +50,7 @@ The image shows the effect of the transformers framework using Tensorlink for mo
     https://github.com/nvwacloud/tensorlink/releases/download/deps/torch-2.1.2+cu121-cp310-cp310-win_amd64.whl
     pip install torch-2.1.2+cu121-cp310-cp310-win_amd64.whl
     ```
+    We did not modify any PyTorch source code; we only changed some compilation options to allow PyTorch to use external CUDA dynamic libraries. If you need to compile PyTorch yourself, please refer to the patch file: [pytorch-v2.1.2-build-for-msvc](https://github.com/nvwacloud/tensorlink/blob/master/pytorch/pytorch-v2.1.2-build-for-msvc.patch)
 
 3. Install Tensorlink CUDA dependency library. If CUDA 12.1 is already installed on your system, you can skip this step.
 

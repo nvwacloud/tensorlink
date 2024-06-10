@@ -40,6 +40,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
     https://github.com/nvwacloud/tensorlink/releases/download/deps/torch-2.1.2+cu121-cp310-cp310-win_amd64.whl
     pip install torch-2.1.2+cu121-cp310-cp310-win_amd64.whl
     ```
+    我们并没有修改任何pytorch源码，仅对部分编译选项做了修改，为了让pytorch使用外部的CUDA动态链接库；如果您需要自行编译pytorch，请参考patch文件：[pytorch-v2.1.2-build-for-msvc](https://github.com/nvwacloud/tensorlink/blob/master/pytorch/pytorch-v2.1.2-build-for-msvc.patch)
 3. 安装Tensorlink CUDA依赖库，如果您的系统中已安装CUDA 12.1，可以跳过此步骤；
     ```python
     https://github.com/nvwacloud/tensorlink/releases/download/deps/tensorlink_cuda_deps.zip
