@@ -1,0 +1,191 @@
+From 8dba8e9e8942a4b85b29f9d4e8ffdfb4782efe58 Mon Sep 17 00:00:00 2001
+From: unknown <rui.cai@tenclass.com>
+Date: Wed, 6 Mar 2024 18:09:38 +0800
+Subject: [PATCH] build for msvc
+
+---
+ aten/src/ATen/cpu/vec/vec_base.h              |  5 +++--
+ caffe2/CMakeLists.txt                         | 13 +++++++++++--
+ .../Modules_CUDA_fix/upstream/FindCUDA.cmake  |  4 ++--
+ cmake/public/cuda.cmake                       | 19 +++++++++++++------
+ third_party/nvfuser/CMakeLists.txt            |  9 +++++++--
+ tools/generate_torch_version.py               |  8 ++++----
+ torch/CMakeLists.txt                          |  8 +++++++-
+ version.txt                                   |  2 +-
+ 8 files changed, 48 insertions(+), 20 deletions(-)
+
+diff --git a/aten/src/ATen/cpu/vec/vec_base.h b/aten/src/ATen/cpu/vec/vec_base.h
+index f68e9c6ebb3..f3d40219f2a 100644
+--- a/aten/src/ATen/cpu/vec/vec_base.h
++++ b/aten/src/ATen/cpu/vec/vec_base.h
+@@ -150,9 +150,10 @@ public:
+   // versions GCC/Clang have buggy determinations on whether or not an
+   // identifier is odr-used or not, and in any case it's hard to tell if
+   // a variable is odr-used or not.  So best to just cut the problem at the root.
+-  static constexpr size_type size_T = sizeof(T);  // Workaround to compile with VS2022.
++  // static constexpr size_type size_T = sizeof(T);  // Workaround to compile with VS2022.
+   static constexpr size_type size() {
+-    return VECTOR_WIDTH / size_T;
++    // return VECTOR_WIDTH / size_T;
++    return VECTOR_WIDTH / sizeof(T);
+   }
+   Vectorized() : values{static_cast<T>(0)} {}
+   Vectorized(T val) {
+diff --git a/caffe2/CMakeLists.txt b/caffe2/CMakeLists.txt
+index 74d0d557190..e4ca238bcc0 100644
+--- a/caffe2/CMakeLists.txt
++++ b/caffe2/CMakeLists.txt
+@@ -1516,7 +1516,15 @@ if(USE_CUDA)
+     target_link_libraries(torch_cpu PRIVATE torch::cudart)
+   endif()
+   target_link_libraries(torch_cuda INTERFACE torch::cudart)
+-  target_link_libraries(torch_cuda PUBLIC c10_cuda torch::nvtoolsext)
++  # target_link_libraries(torch_cuda PUBLIC c10_cuda torch::nvtoolsext)
++  target_link_libraries(torch_cuda PUBLIC c10_cuda)
++
++  # CUDA SDK >= 12 doesn't include NVTX anymore, so use the nvToolsExt included in third_party/nccl.
++  if(CUDA_VERSION_MAJOR GREATER_EQUAL 12)
++    list(APPEND Caffe2_GPU_INCLUDE ${TORCH_ROOT}/third_party/nccl/nccl/src/include/nvtx3)
++  else()
++    target_link_libraries(torch_cuda PUBLIC torch::nvtoolsext)
++  endif()
+ 
+   target_include_directories(
+       torch_cuda INTERFACE $<INSTALL_INTERFACE:include>)
+@@ -1571,7 +1579,8 @@ if(BUILD_SHARED_LIBS)
+   # not find them, because they're usually in non-standard locations)
+   if(USE_CUDA)
+     target_link_libraries(torch_global_deps ${Caffe2_PUBLIC_CUDA_DEPENDENCY_LIBS})
+-    target_link_libraries(torch_global_deps torch::cudart torch::nvtoolsext)
++    # target_link_libraries(torch_global_deps torch::cudart torch::nvtoolsext)
++    target_link_libraries(torch_global_deps torch::cudart)
+   endif()
+   if(USE_TBB)
+     target_link_libraries(torch_global_deps TBB::tbb)
+diff --git a/cmake/Modules_CUDA_fix/upstream/FindCUDA.cmake b/cmake/Modules_CUDA_fix/upstream/FindCUDA.cmake
+index 420ee63cfad..c2d25934560 100644
+--- a/cmake/Modules_CUDA_fix/upstream/FindCUDA.cmake
++++ b/cmake/Modules_CUDA_fix/upstream/FindCUDA.cmake
+@@ -846,8 +846,8 @@ endmacro()
+ # CUDA_LIBRARIES
+ cuda_find_library_local_first(CUDA_CUDART_LIBRARY cudart "\"cudart\" library")
+ 
+-cuda_find_library_local_first(CUDA_cudart_static_LIBRARY cudart_static "static CUDA runtime library")
+-mark_as_advanced(CUDA_cudart_static_LIBRARY)
++# cuda_find_library_local_first(CUDA_cudart_static_LIBRARY cudart_static "static CUDA runtime library")
++# mark_as_advanced(CUDA_cudart_static_LIBRARY)
+ 
+ 
+ if(CUDA_cudart_static_LIBRARY)
+diff --git a/cmake/public/cuda.cmake b/cmake/public/cuda.cmake
+index 32f3ba375b5..3c147fd18b9 100644
+--- a/cmake/public/cuda.cmake
++++ b/cmake/public/cuda.cmake
+@@ -67,8 +67,14 @@ if(NOT CMAKE_CUDA_COMPILER_VERSION STREQUAL CUDAToolkit_VERSION OR
+                       "V${CUDAToolkit_VERSION} in '${CUDAToolkit_INCLUDE_DIR}'")
+ endif()
+ 
+-if(NOT TARGET CUDA::nvToolsExt)
+-  message(FATAL_ERROR "Failed to find nvToolsExt")
++# if(NOT TARGET CUDA::nvToolsExt)
++#   message(FATAL_ERROR "Failed to find nvToolsExt")
++# CUDA SDK >= 12 doesn't include NVTX anymore (all references to nvToolsExt will use
++# the NVTX from third_party/nccl/nccl/src/include/nvtx3).
++if(CUDA_VERSION_MAJOR LESS 12)
++  if(NOT TARGET CUDA::nvToolsExt)
++    message(FATAL_ERROR "Failed to find nvToolsExt")
++  endif()
+ endif()
+ 
+ message(STATUS "Caffe2: CUDA detected: " ${CUDA_VERSION})
+@@ -215,10 +221,11 @@ else()
+ endif()
+ 
+ # nvToolsExt
+-add_library(torch::nvtoolsext INTERFACE IMPORTED)
+-set_property(
+-    TARGET torch::nvtoolsext PROPERTY INTERFACE_LINK_LIBRARIES
+-    CUDA::nvToolsExt)
++# add_library(torch::nvtoolsext INTERFACE IMPORTED)
++# set_property(
++#     TARGET torch::nvtoolsext PROPERTY INTERFACE_LINK_LIBRARIES
++#     CUDA::nvToolsExt)
++# nvToolsExt now included under cudart
+ 
+ # cublas
+ add_library(caffe2::cublas INTERFACE IMPORTED)
+diff --git a/third_party/nvfuser/CMakeLists.txt b/third_party/nvfuser/CMakeLists.txt
+index b148418af0c..c0662e62a55 100644
+--- a/third_party/nvfuser/CMakeLists.txt
++++ b/third_party/nvfuser/CMakeLists.txt
+@@ -146,7 +146,12 @@ endif()
+ 
+ target_link_libraries(${NVFUSER_CODEGEN} PRIVATE torch ${TORCHLIB_FLAVOR})
+ if(NOT USE_ROCM)
+-  target_link_libraries(${NVFUSER_CODEGEN} PRIVATE ${CUDA_NVRTC_LIB} torch::nvtoolsext)
++  # target_link_libraries(${NVFUSER_CODEGEN} PRIVATE ${CUDA_NVRTC_LIB} torch::nvtoolsext)
++  if(CUDA_VERSION_MAJOR GREATER_EQUAL 12)
++    target_include_directories(${NVFUSER_CODEGEN} PRIVATE ${TORCH_ROOT}/third_party/nccl/nccl/src/include/nvtx3)
++  else()
++    target_link_libraries(torch_cuda PUBLIC torch::nvtoolsext)
++  endif()
+   target_include_directories(${NVFUSER_CODEGEN} PRIVATE ${CUDA_INCLUDE_DIRS})
+ else()
+   target_link_libraries(${NVFUSER_CODEGEN} PRIVATE ${ROCM_HIPRTC_LIB})
+@@ -183,7 +188,7 @@ if(BUILD_PYTHON)
+     # NB: This must be target_compile_definitions, not target_compile_options,
+     # as the latter is not respected by nvcc
+     target_compile_definitions(${NVFUSER} PRIVATE "-DTORCH_CUDA_BUILD_MAIN_LIB")
+-    target_link_libraries(${NVFUSER} PRIVATE torch::nvtoolsext)
++    # target_link_libraries(${NVFUSER} PRIVATE torch::nvtoolsext)
+   else()
+     target_compile_options(${NVFUSER} PRIVATE "-DTORCH_HIP_BUILD_MAIN_LIB")
+     target_compile_definitions(${NVFUSER} PRIVATE "-DTORCH_HIP_BUILD_MAIN_LIB")
+diff --git a/tools/generate_torch_version.py b/tools/generate_torch_version.py
+index d90d3646ab1..b4b30587bb4 100644
+--- a/tools/generate_torch_version.py
++++ b/tools/generate_torch_version.py
+@@ -49,10 +49,10 @@ def get_torch_version(sha: Optional[str] = None) -> str:
+         version = os.getenv("PYTORCH_BUILD_VERSION", "")
+         if build_number > 1:
+             version += ".post" + str(build_number)
+-    elif sha != UNKNOWN:
+-        if sha is None:
+-            sha = get_sha(pytorch_root)
+-        version += "+git" + sha[:7]
++    # elif sha != UNKNOWN:
++    #     if sha is None:
++    #         sha = get_sha(pytorch_root)
++    #     version += "+git" + sha[:7]
+     return version
+ 
+ 
+diff --git a/torch/CMakeLists.txt b/torch/CMakeLists.txt
+index 62ee4c12a94..8e994f3bb26 100644
+--- a/torch/CMakeLists.txt
++++ b/torch/CMakeLists.txt
+@@ -137,7 +137,13 @@ if(USE_CUDA)
+         list(APPEND TORCH_PYTHON_COMPILE_DEFINITIONS USE_CUDNN)
+     endif()
+ 
+-    list(APPEND TORCH_PYTHON_LINK_LIBRARIES torch::nvtoolsext)
++    # list(APPEND TORCH_PYTHON_LINK_LIBRARIES torch::nvtoolsext)
++    # CUDA SDK >= 12 doesn't include NVTX anymore, so use the nvToolsExt included in third_party/nccl.
++    if(CUDA_VERSION_MAJOR GREATER_EQUAL 12)
++      list(APPEND TORCH_PYTHON_INCLUDE_DIRECTORIES ${TORCH_ROOT}/third_party/nccl/nccl/src/include/nvtx3)
++    else()
++      list(APPEND TORCH_PYTHON_LINK_LIBRARIES torch::nvtoolsext)
++    endif()
+ endif()
+ 
+ if(USE_ROCM)
+diff --git a/version.txt b/version.txt
+index ecaf4eea7c5..168d68efbc2 100644
+--- a/version.txt
++++ b/version.txt
+@@ -1 +1 @@
+-2.1.0a0
++2.1.2+cu121
+-- 
+2.44.0.windows.1
+
