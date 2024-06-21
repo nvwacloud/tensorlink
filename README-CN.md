@@ -6,14 +6,16 @@ Tensorlink 是一款基于CUDA API-Forwarding实现的分布式计算框架，�
 
 # 示例
 PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于另一个子网下的4090显卡
-
-## 场景一：Stable Diffusion 使用远端显卡加速
+## 场景一：Comfy-UI 使用远端显卡加速
+图中展示了Comfy-UI使用tensorlink进行计算的效果
+![alt text](assets/6.gif)
+## 场景二：Stable Diffusion 使用远端显卡加速
 图中展示了SD使用tensorlink进行计算的效果
 ![alt text](assets/3.gif)
-## 场景二：Transformer LLM 使用远端显卡推理
+## 场景三：Transformer LLM 使用远端显卡推理
 图中展示了trnasformers框架使用tensorlink进行模型推理的效果
 ![alt text](assets/4.gif)
-## 场景三：Cinma4D Octane插件 使用远端显卡渲染
+## 场景四：Cinma4D Octane插件 使用远端显卡渲染
 ![alt text](assets/5.gif)
 # 路线图
 
@@ -21,6 +23,8 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
 - CUDA Driver API Hook ✅
 - CUDA cuBLAS Hook ✅
 - CUDA cuDNN Hook ✅
+- 支持缓存传输数据，提升加载速度 ✅
+- 释放进入空闲状态的显存，支持按需加载module ✅
 - 支持客户端多进程 ✅
 - 支持ZSTD数据压缩 ✅
 - 支持Light(TCP+UDP)与Native(TCP+TCP)两种通信协议 ✅

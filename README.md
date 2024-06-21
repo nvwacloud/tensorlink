@@ -8,20 +8,24 @@ Tensorlink is a distributed computing framework based on CUDA API-Forwarding. Wh
 
 Note: The system shown in the scenarios does not have a physical GPU. It uses Tensorlink to connect to a 4090 GPU in another subnet.
 
+## Scenario 1: Comfy-UI Accelerated by Remote GPU
 
-## Scenario 1: Stable Diffusion Accelerated by Remote GPU
+The image shows the effect of Comfy-UI using Tensorlink for computation.
+![alt text](assets/6.gif)
+
+## Scenario 2: Stable Diffusion Accelerated by Remote GPU
 
 The image shows the effect of SD using Tensorlink for computation.
 ![alt text](assets/3.gif)
 
 
-## Scenario 2: Transformer LLM Inference Using Remote GPU
+## Scenario 3: Transformer LLM Inference Using Remote GPU
 
 The image shows the effect of the transformers framework using Tensorlink for model inference.
 ![alt text](assets/4.gif)
 
 
-## Scenario 3: Cinema4D Octane Plugin Remote GPU Rendering
+## Scenario 4: Cinema4D Octane Plugin Remote GPU Rendering
 ![alt text](assets/5.gif)
 
 # Roadmap
@@ -30,6 +34,8 @@ The image shows the effect of the transformers framework using Tensorlink for mo
 - CUDA Driver API Hook ✅
 - CUDA cuBLAS Hook ✅
 - CUDA cuDNN Hook ✅
+- Support caching transmitted data to enhance loading speed ✅
+- Release memory that has entered idle state, supporting on-demand module loading. ✅
 - Support for Client Multi-Process ✅
 - Support for ZSTD Data Compression ✅
 - Support for Light (TCP+UDP) and Native (TCP+TCP) Communication Protocols ✅
