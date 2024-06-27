@@ -35,7 +35,7 @@ The image shows the effect of the transformers framework using Tensorlink for mo
 - CUDA cuBLAS Hook ✅
 - CUDA cuDNN Hook ✅
 - Support caching transmitted data to enhance loading speed ✅
-- Release memory that has entered idle state, supporting on-demand module loading. ✅
+- Support dynamic release of GPU memory that has entered idle state. ✅
 - Support for Client Multi-Process ✅
 - Support for ZSTD Data Compression ✅
 - Support for Light (TCP+UDP) and Native (TCP+TCP) Communication Protocols ✅

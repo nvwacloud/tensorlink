@@ -24,7 +24,7 @@ PS: 场景中展示的系统中没有实体显卡，使用tensolink链接处于�
 - CUDA cuBLAS Hook ✅
 - CUDA cuDNN Hook ✅
 - 支持缓存传输数据，提升加载速度 ✅
-- 释放进入空闲状态的显存，支持按需加载module ✅
+- 支持动态释放进入空闲状态的GPU显存 ✅
 - 支持客户端多进程 ✅
 - 支持ZSTD数据压缩 ✅
 - 支持Light(TCP+UDP)与Native(TCP+TCP)两种通信协议 ✅
