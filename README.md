@@ -1,5 +1,7 @@
 English | [简体中文](README-CN.md)
 
+# Try new edition at [Tensor Fusion](https://github.com/NexusGPU/tensor-fusion)
+
 # Introduction
 
 Tensorlink is a distributed computing framework based on CUDA API-Forwarding. When your computer lacks a GPU or its GPU performance is insufficient, Tensorlink allows you to easily utilize GPU resources from any location within the local area network.
