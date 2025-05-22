@@ -1,5 +1,7 @@
 简体中文 | [English](README.md)
 
+# 尝试新版本 [Tensor Fusion](https://github.com/NexusGPU/tensor-fusion)
+
 # 简介
 
 Tensorlink 是一款基于CUDA API-Forwarding实现的分布式计算框架，当您的电脑没有显卡或显卡性能不足，Tensorlink可以帮助您轻松使用局域网内任意位置上的显卡资源。
